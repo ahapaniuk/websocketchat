@@ -17,7 +17,7 @@ namespace WebSocketsCmd.Server
         protected override void OnTextFrame(string text)
         {
 
-            string response = "-----------> SERVER received and answered: " + text;
+            string response = "* -----------> SERVER received and answered: " + text;
 
             //string response = "Hello from the SERVER!";
             base.Send(response);

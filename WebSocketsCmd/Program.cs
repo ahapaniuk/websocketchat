@@ -56,7 +56,7 @@ namespace WebSocketsCmd
 
         private static void Client_TextFrame(object sender, TextFrameEventArgs e)
         {
-            _logger.Information(typeof(Program), "-----------> CLIENT received: {0}", e.Text);
+            _logger.Information(typeof(Program), "* -----------> CLIENT received: {0}", e.Text);
             var client = (ChatWebSocketClient)sender;
 
             // lets test the close handshake
