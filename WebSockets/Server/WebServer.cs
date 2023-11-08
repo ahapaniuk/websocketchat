@@ -18,13 +18,14 @@ using WebSockets.Common;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using WebSockets.Server.WebSocket;
 
 namespace WebSockets
 {
     public class WebServer : IDisposable
     {
         // maintain a list of open connections so that we can notify the client if the server shuts down
-        private readonly List<IDisposable> _openConnections;
+        private readonly List<IService> _openConnections;
         private readonly IServiceFactory _serviceFactory;
         private readonly IWebSocketLogger _logger;
         private X509Certificate2 _sslCertificate;
@@ -35,7 +36,19 @@ namespace WebSockets
         {
             _serviceFactory = serviceFactory;
             _logger = logger;
-            _openConnections = new List<IDisposable>();
+            _openConnections = new List<IService>();
+        }
+
+        public IService GetServiceForClientId(int clientId)
+        {
+            foreach (var service in _openConnections)
+            {
+                var clientIdentificationId = service.GetClientIdentificationId();
+                if (clientIdentificationId == clientId)
+                    return service;
+            }
+
+            return null;
         }
 
         public void Listen(int port, X509Certificate2 sslCertificate)
@@ -84,7 +97,7 @@ namespace WebSockets
             _listener.BeginAcceptTcpClient(new AsyncCallback(HandleAsyncConnection), null);
         }
 
-        private static ConnectionDetails GetConnectionDetails(Stream stream, TcpClient tcpClient)
+        private ConnectionDetails GetConnectionDetails(Stream stream, TcpClient tcpClient)
         {
             // read the header and check that it is a GET request
             string header = HttpHelper.ReadHttpHeader(stream);
@@ -102,16 +115,16 @@ namespace WebSockets
 
                 if (webSocketUpgradeRegexMatch.Success)
                 {
-                    return new ConnectionDetails(stream, tcpClient, path, ConnectionType.WebSocket, header);
+                    return new ConnectionDetails(this, stream, tcpClient, path, ConnectionType.WebSocket, header);
                 }
                 else
                 {
-                    return new ConnectionDetails(stream, tcpClient, path, ConnectionType.Http, header);
+                    return new ConnectionDetails(this, stream, tcpClient, path, ConnectionType.Http, header);
                 }
             }
             else
             {
-                return new ConnectionDetails(stream, tcpClient, string.Empty, ConnectionType.Unknown, header); 
+                return new ConnectionDetails(this, stream, tcpClient, string.Empty, ConnectionType.Unknown, header); 
             }
         }
 

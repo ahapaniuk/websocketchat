@@ -21,8 +21,8 @@ namespace WebSockets.Server.WebSocket
         private readonly string _header;
         private readonly IWebSocketLogger _logger;
         private readonly TcpClient _tcpClient;
-        private bool _isDisposed = false;
-
+        private bool _isDisposed = false;    
+        
         public WebSocketService(Stream stream, TcpClient tcpClient, string header, bool noDelay, IWebSocketLogger logger)
             : base(logger)
         {
@@ -40,6 +40,7 @@ namespace WebSockets.Server.WebSocket
         {
             base.OpenBlocking(_stream, _tcpClient.Client, false);
         }
+
 
         protected override void PerformHandshake(Stream stream)
         {
@@ -114,6 +115,11 @@ namespace WebSockets.Server.WebSocket
             _isDisposed = true;
 
             base.OnConnectionClose(payload);
+        }
+
+        public virtual int GetClientIdentificationId()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -126,5 +126,10 @@ namespace WebSockets.Server.Http
         {
             // do nothing. The network stream will be closed by the WebServer
         }
+
+        public int GetClientIdentificationId()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -39,6 +39,8 @@
             // When the connection is open
             CONNECTION.onopen = function () {
                 $('#messages').append($('<li>').text('Connection opened'));
+				CONNECTION.send('AUTH step. Validated ClientToken=1');
+				$('#messages').append($('<li>').text('Auth data sent'));
             };
 
             // when the connection is closed by the server

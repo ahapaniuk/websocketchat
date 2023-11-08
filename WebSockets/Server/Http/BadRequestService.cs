@@ -35,5 +35,10 @@ namespace WebSockets.Server.Http
         {
             // do nothing
         }
+
+        public int GetClientIdentificationId()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
